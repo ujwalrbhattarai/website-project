@@ -1,0 +1,300 @@
+{% extends "base.html" %}
+
+{% block title %}{{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Course Demo Video -->
+            {% if course.demo_video_url and not enrollment %}
+            <div class="card dashboard-card mb-4">
+                <div class="card-body p-0">
+                    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; background: #000; border-radius: 8px;">
+                        <iframe src="{{ course.demo_video_url }}" 
+                                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+                                frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+                <div class="card-footer bg-light">
+                    <p class="mb-0 text-center">
+                        <i class="fas fa-play-circle text-primary"></i> 
+                        <strong>Course Preview</strong> - Enroll to access all {{ course.videos|length }} videos
+                    </p>
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="card dashboard-card mb-4">
+                <div class="card-body">
+                    <h2 class="card-title">{{ course.title }}</h2>
+                    <p class="lead">{{ course.description }}</p>
+                    
+                    <hr>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <i class="fas fa-clock text-primary"></i>
+                            <strong>Duration:</strong> {{ course.duration_hours or 'N/A' }} hours
+                        </div>
+                        <div class="col-md-4">
+                            <i class="fas fa-video text-primary"></i>
+                            <strong>Videos:</strong> {{ course.videos|length }}
+                        </div>
+                        <div class="col-md-4">
+                            <i class="fas fa-language text-primary"></i>
+                            <strong>Language:</strong> English/Nepali
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if enrollment %}
+                <!-- Course Content for Enrolled Students -->
+                <div class="card dashboard-card">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0"><i class="fas fa-list"></i> Course Content</h4>
+                    </div>
+                    <div class="card-body">
+                        {% if course.videos %}
+                            <div class="list-group">
+                                {% for video in course.videos|sort(attribute='order') %}
+                                <a href="{{ url_for('watch_video', video_id=video.id) }}" 
+                                   class="list-group-item list-group-item-action">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h5 class="mb-1">
+                                                <i class="fas fa-play-circle text-primary"></i>
+                                                {{ video.title }}
+                                            </h5>
+                                            <p class="mb-1 text-muted">{{ video.description or 'No description' }}</p>
+                                            {% if video.duration_minutes %}
+                                            <small class="text-muted">
+                                                <i class="fas fa-clock"></i> {{ video.duration_minutes }} minutes
+                                            </small>
+                                            {% endif %}
+                                        </div>
+                                        <i class="fas fa-chevron-right"></i>
+                                    </div>
+                                </a>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i> No videos available yet. Check back soon!
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% else %}
+                <!-- Enrollment Form for Non-enrolled Students -->
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i> 
+                    You need to enroll in this course to access the videos and materials.
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="card dashboard-card mb-4">
+                <div class="card-body text-center">
+                    <h3 class="mb-3">
+                        <span class="price-tag" style="font-size: 1.5rem;">
+                            <span class="npr-symbol"></span>{{ "%.2f"|format(course.price_npr) }}
+                        </span>
+                    </h3>
+                    
+                    {% if enrollment %}
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle"></i> You are enrolled!
+                        </div>
+                        <div class="progress mb-3" style="height: 30px;">
+                            <div class="progress-bar bg-success" role="progressbar" 
+                                 style="width: {{ enrollment.completion_percentage }}%">
+                                {{ "%.1f"|format(enrollment.completion_percentage) }}% Complete
+                            </div>
+                        </div>
+                        <a href="{{ url_for('student_dashboard') }}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-tachometer-alt"></i> Go to Dashboard
+                        </a>
+                    {% else %}
+                        {% if user.role == 'student' %}
+                        <button type="button" class="btn btn-success btn-lg w-100 mb-3" data-bs-toggle="modal" data-bs-target="#paymentModal">
+                            <i class="fas fa-shopping-cart"></i> Enroll Now
+                        </button>
+                        <p class="text-muted small">
+                            <i class="fas fa-shield-alt"></i> Secure payment with eSewa
+                        </p>
+                        {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> You are viewing this course as {{ user.role }}. Course enrollment is only available for students.
+                        </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Course Instructor -->
+            <div class="card dashboard-card instructor-card">
+                <div class="card-body">
+                    <h5 class="card-title text-center mb-4">
+                        <i class="fas fa-chalkboard-teacher"></i> Your Instructor
+                    </h5>
+                    <div class="text-center">
+                        {% if course.instructor_id %}
+                            <!-- Instructor image placeholder - replace with actual image -->
+                            <img src="{{ url_for('static', filename='images/instructors/default.jpg') }}" 
+                                 alt="Instructor" 
+                                 class="instructor-img mb-3"
+                                 onerror="this.src='https://ui-avatars.com/api/?name={{ course.instructor_id }}&size=150&background=6366f1&color=fff&bold=true'">
+                            <h6 class="fw-bold">Expert Instructor</h6>
+                            <p class="text-muted small">Industry Professional</p>
+                            <div class="mt-3">
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <p class="small text-muted mt-2">5.0 Instructor Rating</p>
+                            </div>
+                        {% else %}
+                            <img src="https://ui-avatars.com/api/?name=Expert+Teacher&size=150&background=6366f1&color=fff&bold=true" 
+                                 alt="Instructor" 
+                                 class="instructor-img mb-3">
+                            <h6 class="fw-bold">Expert Faculty</h6>
+                            <p class="text-muted small">The Innovative Group</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Payment Modal -->
+{% if user.role == 'student' and not is_enrolled %}
+<div class="modal fade" id="paymentModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 20px; overflow: hidden;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <h5 class="modal-title">
+                    <i class="fas fa-credit-card"></i> Choose Payment Method
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="text-center mb-4">
+                    <h4 class="mb-2">{{ course.title }}</h4>
+                    <h2 class="text-danger fw-bold">
+                        <span class="npr-symbol"></span>{{ "%.2f"|format(course.price_npr) }}
+                    </h2>
+                </div>
+                
+                <div class="row g-3">
+                    <!-- eSewa Payment -->
+                    <div class="col-12">
+                        <div class="payment-option" onclick="selectPayment('esewa')">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <img src="https://esewa.com.np/common/images/esewa_og.png" 
+                                         alt="eSewa" class="payment-logo mb-2">
+                                    <p class="mb-0 small text-muted">Pay securely with eSewa</p>
+                                </div>
+                                <i class="fas fa-check-circle fa-2x text-success" id="esewa-check" style="display: none;"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Khalti Payment -->
+                    <div class="col-12">
+                        <div class="payment-option" onclick="selectPayment('khalti')">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <img src="https://khalti.com/static/images/logo1.png" 
+                                         alt="Khalti" class="payment-logo mb-2">
+                                    <p class="mb-0 small text-muted">Pay with Khalti wallet</p>
+                                </div>
+                                <i class="fas fa-check-circle fa-2x text-success" id="khalti-check" style="display: none;"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Cash Payment (For Demo) -->
+                    <div class="col-12">
+                        <div class="payment-option" onclick="selectPayment('cash')">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <h5 class="mb-2"><i class="fas fa-money-bill-wave text-success"></i> Cash Payment</h5>
+                                    <p class="mb-0 small text-muted">Pay at our office (Demo Mode)</p>
+                                </div>
+                                <i class="fas fa-check-circle fa-2x text-success" id="cash-check" style="display: none;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <form method="POST" action="{{ url_for('enroll_course', course_id=course.id) }}" id="paymentForm">
+                    <input type="hidden" name="payment_method" id="payment_method" value="">
+                    
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg" id="proceedBtn" disabled>
+                            <i class="fas fa-lock"></i> Proceed to Payment
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="text-center mt-3">
+                    <small class="text-muted">
+                        <i class="fas fa-shield-alt"></i> 100% Secure & Encrypted Payment
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<script>
+    let selectedPaymentMethod = '';
+    
+    function selectPayment(method) {
+        // Remove all selections
+        document.querySelectorAll('.payment-option').forEach(opt => {
+            opt.classList.remove('selected');
+        });
+        document.querySelectorAll('[id$="-check"]').forEach(check => {
+            check.style.display = 'none';
+        });
+        
+        // Add selection to clicked option
+        event.currentTarget.classList.add('selected');
+        document.getElementById(method + '-check').style.display = 'block';
+        
+        // Update hidden input and enable button
+        selectedPaymentMethod = method;
+        document.getElementById('payment_method').value = method;
+        document.getElementById('proceedBtn').disabled = false;
+        
+        // Change button text based on payment method
+        const btn = document.getElementById('proceedBtn');
+        if (method === 'esewa') {
+            btn.className = 'btn btn-esewa btn-lg';
+            btn.innerHTML = '<i class="fas fa-wallet"></i> Pay with eSewa';
+        } else if (method === 'khalti') {
+            btn.className = 'btn btn-khalti btn-lg';
+            btn.innerHTML = '<i class="fas fa-wallet"></i> Pay with Khalti';
+        } else {
+            btn.className = 'btn btn-success btn-lg';
+            btn.innerHTML = '<i class="fas fa-check"></i> Confirm Enrollment';
+        }
+    }
+</script>
+
+{% endblock %}

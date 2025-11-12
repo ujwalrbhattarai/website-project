@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}Management Reports - The Innovative Group{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="fas fa-chart-bar"></i> Reports & Analytics</h2>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Total Revenue</h5>
+                    <h2 class="text-success">NPR {{ "{:,.0f}".format(payments|sum(attribute='amount_npr') if payments else 0) }}</h2>
+                    <p class="text-muted mb-0">From {{ payments|length }} transactions</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Active Courses</h5>
+                    <h2 class="text-primary">{{ courses|length }}</h2>
+                    <p class="text-muted mb-0">Available for enrollment</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Average Course Price</h5>
+                    <h2 class="text-info">NPR {{ "{:,.0f}".format(courses|sum(attribute='price_npr') / courses|length if courses|length > 0 else 0) }}</h2>
+                    <p class="text-muted mb-0">Per course</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Performance -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-book"></i> Course Performance</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if courses %}
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Course Title</th>
+                                        <th>Instructor</th>
+                                        <th>Price (NPR)</th>
+                                        <th>Duration</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for course in courses %}
+                                    <tr>
+                                        <td><strong>{{ course.title }}</strong></td>
+                                        <td>{{ course.instructor.full_name }}</td>
+                                        <td>NPR {{ "{:,.0f}".format(course.price_npr) }}</td>
+                                        <td>{{ course.duration_hours }} hours</td>
+                                        <td><span class="badge bg-success">Active</span></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <p class="text-muted">No courses available</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment History -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-money-check-alt"></i> Recent Payments</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if payments %}
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Student</th>
+                                        <th>Course</th>
+                                        <th>Amount (NPR)</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for payment in payments|reverse %}
+                                    <tr>
+                                        <td>{{ payment.payment_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                                        <td>{{ payment.student.full_name }}</td>
+                                        <td>{{ payment.course.title }}</td>
+                                        <td><strong>NPR {{ "{:,.0f}".format(payment.amount_npr) }}</strong></td>
+                                        <td>
+                                            {% if payment.status == 'completed' %}
+                                                <span class="badge bg-success">Completed</span>
+                                            {% elif payment.status == 'pending' %}
+                                                <span class="badge bg-warning">Pending</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">Failed</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <p class="text-muted">No payment records</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Options -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5><i class="fas fa-download"></i> Export Options</h5>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <button class="btn btn-outline-success w-100" disabled>
+                                <i class="fas fa-file-excel"></i> Export to Excel
+                            </button>
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-outline-danger w-100" disabled>
+                                <i class="fas fa-file-pdf"></i> Export to PDF
+                            </button>
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-outline-primary w-100" disabled>
+                                <i class="fas fa-print"></i> Print Report
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-muted mt-3 mb-0"><small>* Export features coming soon</small></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

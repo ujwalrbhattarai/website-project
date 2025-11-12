@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Certificate - {{ certificate.course.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Certificate Card -->
+            <div class="card shadow-lg border-0" id="certificateCard" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="card-body p-5">
+                    <!-- Certificate Content -->
+                    <div class="bg-white p-5 rounded" style="border: 10px solid #FFD700;">
+                        <!-- Header -->
+                        <div class="text-center mb-4">
+                            <i class="fas fa-award fa-4x text-warning mb-3"></i>
+                            <h1 class="display-4 fw-bold" style="color: #333; font-family: 'Georgia', serif;">
+                                Certificate of Completion
+                            </h1>
+                            <p class="text-muted mb-0" style="font-size: 1.1rem;">The Innovative Group</p>
+                        </div>
+
+                        <hr class="my-4" style="border-top: 2px solid #FFD700;">
+
+                        <!-- Content -->
+                        <div class="text-center mb-4">
+                            <p class="mb-2" style="font-size: 1.1rem; color: #666;">This is to certify that</p>
+                            <h2 class="display-5 fw-bold mb-3" style="color: #333; font-family: 'Georgia', serif;">
+                                {{ certificate.student.full_name }}
+                            </h2>
+                            <p class="mb-2" style="font-size: 1.1rem; color: #666;">has successfully completed the course</p>
+                            <h3 class="fw-bold mb-4" style="color: #667eea;">
+                                {{ certificate.course.title }}
+                            </h3>
+                        </div>
+
+                        <!-- Details -->
+                        <div class="row mb-4">
+                            <div class="col-md-4 text-center">
+                                <p class="mb-1"><strong style="color: #333;">Certificate Number</strong></p>
+                                <p class="text-muted">{{ certificate.certificate_number }}</p>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <p class="mb-1"><strong style="color: #333;">Date of Completion</strong></p>
+                                <p class="text-muted">{{ certificate.completion_date.strftime('%B %d, %Y') if certificate.completion_date else certificate.issue_date.strftime('%B %d, %Y') }}</p>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <p class="mb-1"><strong style="color: #333;">Grade</strong></p>
+                                <p>
+                                    <span class="badge 
+                                        {% if certificate.grade in ['A+', 'A'] %}bg-success
+                                        {% elif certificate.grade in ['B+', 'B'] %}bg-primary
+                                        {% else %}bg-info{% endif %}" 
+                                        style="font-size: 1.2rem;">
+                                        {{ certificate.grade }}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Course Details -->
+                        <div class="row mb-4">
+                            <div class="col-md-6 text-center">
+                                <p class="mb-1"><strong style="color: #333;">Instructor</strong></p>
+                                <p class="text-muted">{{ certificate.course.instructor.full_name }}</p>
+                            </div>
+                            <div class="col-md-6 text-center">
+                                <p class="mb-1"><strong style="color: #333;">Duration</strong></p>
+                                <p class="text-muted">{{ certificate.course.duration_hours }} Hours</p>
+                            </div>
+                        </div>
+
+                        <hr class="my-4" style="border-top: 2px solid #FFD700;">
+
+                        <!-- Signatures -->
+                        <div class="row mt-4">
+                            <div class="col-6 text-center">
+                                <div class="mb-3">
+                                    <div style="border-top: 2px solid #333; width: 200px; margin: 0 auto;"></div>
+                                </div>
+                                <p class="mb-0"><strong style="color: #333;">Director Signature</strong></p>
+                                <p class="text-muted small">The Innovative Group</p>
+                            </div>
+                            <div class="col-6 text-center">
+                                <div class="mb-3">
+                                    <div style="border-top: 2px solid #333; width: 200px; margin: 0 auto;"></div>
+                                </div>
+                                <p class="mb-0"><strong style="color: #333;">Instructor Signature</strong></p>
+                                <p class="text-muted small">{{ certificate.course.instructor.full_name }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Verification -->
+                        <div class="text-center mt-4">
+                            <small class="text-muted">
+                                <i class="fas fa-shield-alt"></i>
+                                Verify this certificate at: www.theinnovativegroup.com/verify/{{ certificate.certificate_number }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="text-center mt-4">
+                <button onclick="window.print()" class="btn btn-lg btn-primary me-2">
+                    <i class="fas fa-print"></i> Print Certificate
+                </button>
+                <button onclick="downloadPDF()" class="btn btn-lg btn-success me-2">
+                    <i class="fas fa-download"></i> Download PDF
+                </button>
+                <a href="{{ url_for('student_certificates') }}" class="btn btn-lg btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Certificates
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #certificateCard, #certificateCard * {
+        visibility: visible;
+    }
+    #certificateCard {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+    .btn {
+        display: none !important;
+    }
+}
+</style>
+
+<script>
+function downloadPDF() {
+    // In a real implementation, you would call a backend endpoint to generate PDF
+    // For now, we'll use print functionality
+    alert('PDF download will be implemented with a PDF generation library. For now, please use Print and save as PDF.');
+    window.print();
+}
+</script>
+{% endblock %}

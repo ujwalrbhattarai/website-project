@@ -1,0 +1,43 @@
+# Add this to .gitignore to exclude sensitive files from version control
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environment
+venv/
+env/
+ENV/
+.venv
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Flask
+instance/
+.webassets-cache
+
+# Environment variables
+.env
+.env.local
+
+# Uploaded files
+static/uploads/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

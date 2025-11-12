@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}My Certificates - The Innovative Group{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="fas fa-certificate"></i> My Certificates</h2>
+            <p class="text-muted">View and download your course completion certificates</p>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-award fa-3x text-warning mb-2"></i>
+                    <h3>{{ certificates|length }}</h3>
+                    <p class="text-muted mb-0">Certificates Earned</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-graduation-cap fa-3x text-success mb-2"></i>
+                    <h3>{{ eligible_courses|length }}</h3>
+                    <p class="text-muted mb-0">Eligible for Certificate</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-trophy fa-3x text-primary mb-2"></i>
+                    <h3>{{ ((certificates|selectattr('grade', 'in', ['A+', 'A'])|list)|length) }}</h3>
+                    <p class="text-muted mb-0">A/A+ Grades</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Eligible Courses -->
+    {% if eligible_courses %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-check-circle text-success"></i> Request Certificate</h5>
+                    <small class="text-muted">You have completed these courses and can request certificates</small>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for enrollment in eligible_courses %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ enrollment.course.title }}</h5>
+                                    <p class="text-muted mb-2">
+                                        <i class="fas fa-percentage"></i> Completion: <strong>{{ "%.0f"|format(enrollment.completion_percentage) }}%</strong>
+                                    </p>
+                                    <p class="text-muted mb-3">
+                                        <i class="fas fa-calendar"></i> Enrolled: {{ enrollment.enrollment_date.strftime('%B %d, %Y') }}
+                                    </p>
+                                    <form method="POST" action="{{ url_for('request_certificate', course_id=enrollment.course_id) }}" style="display: inline;">
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="fas fa-certificate"></i> Request Certificate
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- My Certificates -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-award"></i> My Certificates</h5>
+                </div>
+                <div class="card-body">
+                    {% if certificates %}
+                    <div class="row">
+                        {% for certificate in certificates %}
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100 border-warning">
+                                <div class="card-body">
+                                    <div class="text-center mb-3">
+                                        <i class="fas fa-certificate fa-4x text-warning"></i>
+                                    </div>
+                                    <h5 class="card-title text-center">{{ certificate.course.title }}</h5>
+                                    <hr>
+                                    <p class="mb-2">
+                                        <strong>Certificate No:</strong><br>
+                                        <small class="text-muted">{{ certificate.certificate_number }}</small>
+                                    </p>
+                                    <p class="mb-2">
+                                        <strong>Issue Date:</strong><br>
+                                        {{ certificate.issue_date.strftime('%B %d, %Y') }}
+                                    </p>
+                                    {% if certificate.completion_date %}
+                                    <p class="mb-2">
+                                        <strong>Completed:</strong><br>
+                                        {{ certificate.completion_date.strftime('%B %d, %Y') }}
+                                    </p>
+                                    {% endif %}
+                                    {% if certificate.grade %}
+                                    <p class="mb-3">
+                                        <strong>Grade:</strong>
+                                        <span class="badge 
+                                            {% if certificate.grade in ['A+', 'A'] %}bg-success
+                                            {% elif certificate.grade in ['B+', 'B'] %}bg-primary
+                                            {% else %}bg-info{% endif %}">
+                                            {{ certificate.grade }}
+                                        </span>
+                                    </p>
+                                    {% endif %}
+                                    <div class="d-grid gap-2">
+                                        <a href="{{ url_for('view_certificate', certificate_id=certificate.id) }}" 
+                                           class="btn btn-warning" target="_blank">
+                                            <i class="fas fa-eye"></i> View Certificate
+                                        </a>
+                                        <button class="btn btn-outline-secondary" onclick="shareCertificate('{{ certificate.certificate_number }}')">
+                                            <i class="fas fa-share-alt"></i> Share
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-certificate fa-5x text-muted mb-3"></i>
+                        <h4>No Certificates Yet</h4>
+                        <p class="text-muted">Complete courses with at least 70% progress to earn certificates!</p>
+                        {% if eligible_courses %}
+                        <p class="text-success"><i class="fas fa-info-circle"></i> You have courses eligible for certification above!</p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function shareCertificate(certNumber) {
+    const url = window.location.origin + '/certificate/' + certNumber;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: 'My Course Certificate',
+            text: 'Check out my certificate from The Innovative Group!',
+            url: url
+        }).catch(err => console.log('Error sharing:', err));
+    } else {
+        // Fallback: copy to clipboard
+        navigator.clipboard.writeText(url).then(() => {
+            alert('Certificate link copied to clipboard!');
+        });
+    }
+}
+</script>
+{% endblock %}
