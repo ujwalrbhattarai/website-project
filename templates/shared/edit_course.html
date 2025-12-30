@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Course - The Innovative Group{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    {% if session.role == 'faculty' %}
+                    <li class="breadcrumb-item"><a href="{{ url_for('faculty.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('faculty.courses') }}">My Courses</a></li>
+                    {% else %}
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin.courses') }}">Courses</a></li>
+                    {% endif %}
+                    <li class="breadcrumb-item active">Edit Course</li>
+                </ol>
+            </nav>
+            <h2><i class="fas fa-edit"></i> Edit Course</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card dashboard-card">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-book"></i> Course Information
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Course Title <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="title" name="title" 
+                                   value="{{ course.title }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" 
+                                      rows="4">{{ course.description or '' }}</textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="price_npr" class="form-label">Price (NPR) <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="price_npr" name="price_npr" 
+                                       value="{{ course.price_npr }}" step="0.01" min="0" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="duration_hours" class="form-label">Duration (Hours)</label>
+                                <input type="number" class="form-control" id="duration_hours" name="duration_hours" 
+                                       value="{{ course.duration_hours or '' }}" min="0">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Category</label>
+                            <select class="form-select" id="category" name="category">
+                                <option value="">Select Category</option>
+                                <option value="programming" {{ 'selected' if course.category == 'programming' }}>Programming</option>
+                                <option value="design" {{ 'selected' if course.category == 'design' }}>Design</option>
+                                <option value="business" {{ 'selected' if course.category == 'business' }}>Business</option>
+                                <option value="marketing" {{ 'selected' if course.category == 'marketing' }}>Marketing</option>
+                                <option value="science" {{ 'selected' if course.category == 'science' }}>Science</option>
+                                <option value="language" {{ 'selected' if course.category == 'language' }}>Language</option>
+                                <option value="other" {{ 'selected' if course.category == 'other' }}>Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="thumbnail_url" class="form-label">Thumbnail URL</label>
+                            <input type="text" class="form-control" id="thumbnail_url" name="thumbnail_url" 
+                                   value="{{ course.thumbnail_url or '' }}" placeholder="https://example.com/image.jpg">
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="is_published" name="is_published"
+                                   {{ 'checked' if course.is_published }}>
+                            <label class="form-check-label" for="is_published">
+                                Published (visible to students)
+                            </label>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                            {% if session.role == 'faculty' %}
+                            <a href="{{ url_for('faculty.course_detail', course_id=course.id) }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Cancel
+                            </a>
+                            {% else %}
+                            <a href="{{ url_for('admin.courses') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Cancel
+                            </a>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card dashboard-card">
+                <div class="card-header">
+                    <i class="fas fa-info-circle"></i> Course Preview
+                </div>
+                <div class="card-body">
+                    {% if course.thumbnail_url %}
+                    <img src="{{ course.thumbnail_url }}" class="img-fluid rounded mb-3" alt="{{ course.title }}">
+                    {% else %}
+                    <div class="bg-light rounded d-flex align-items-center justify-content-center mb-3" 
+                         style="height: 150px;">
+                        <i class="fas fa-book-open fa-3x text-muted"></i>
+                    </div>
+                    {% endif %}
+                    
+                    <h5>{{ course.title }}</h5>
+                    <p class="text-muted small">{{ course.description[:100] }}{% if course.description and course.description|length > 100 %}...{% endif %}</p>
+                    
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-tag text-primary"></i> NPR {{ course.price_npr }}</li>
+                        <li><i class="fas fa-clock text-primary"></i> {{ course.duration_hours or 'N/A' }} hours</li>
+                        <li>
+                            <i class="fas fa-circle text-primary"></i> 
+                            {% if course.is_published %}
+                            <span class="text-success">Published</span>
+                            {% else %}
+                            <span class="text-warning">Draft</span>
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

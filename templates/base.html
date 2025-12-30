@@ -784,7 +784,7 @@
                 <i class="fas fa-bars" style="color: var(--text-color); font-size: 1.5rem;"></i>
             </button>
             
-            <a class="navbar-brand animate__animated animate__fadeInLeft" href="{{ url_for('index') }}">
+            <a class="navbar-brand animate__animated animate__fadeInLeft" href="{{ url_for('auth.index') }}">
                 <i class="fas fa-graduation-cap"></i> The Innovative Group
             </a>
             
@@ -801,10 +801,10 @@
                         <i class="fas fa-user-circle"></i> {{ session.username }}
                     </span>
                 {% else %}
-                    <a href="{{ url_for('login') }}" class="btn btn-outline-secondary btn-sm me-2">
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-secondary btn-sm me-2">
                         <i class="fas fa-sign-in-alt"></i> Login
                     </a>
-                    <a href="{{ url_for('register') }}" class="btn btn-primary btn-sm">
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-sm">
                         <i class="fas fa-user-plus"></i> Register
                     </a>
                 {% endif %}
@@ -822,16 +822,16 @@
         </div>
         <div class="offcanvas-body p-0">
             <div class="list-group list-group-flush">
-                <a href="{{ url_for('index') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                <a href="{{ url_for('auth.index') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                     <i class="fas fa-home"></i> Home
                 </a>
                 
                 {% if session.user_id %}
                     {% if session.role == 'student' %}
-                        <a href="{{ url_for('student_dashboard') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                        <a href="{{ url_for('student.dashboard') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                             <i class="fas fa-tachometer-alt"></i> My Dashboard
                         </a>
-                        <a href="{{ url_for('student_courses') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                        <a href="{{ url_for('student.courses') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                             <i class="fas fa-book-open"></i> Browse Courses
                         </a>
                         
@@ -846,16 +846,16 @@
                                 </h2>
                                 <div id="learningCollapse" class="accordion-collapse collapse" data-bs-parent="#learningAccordion">
                                     <div class="accordion-body p-0">
-                                        <a href="{{ url_for('recorded_videos') }}" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                                        <a href="{{ url_for('student.my_courses') }}" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                                             <i class="fas fa-video"></i> Recorded Videos
                                         </a>
-                                        <a href="{{ url_for('online_classes') }}" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                                        <a href="{{ url_for('student.online_classes') }}" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                                             <i class="fas fa-broadcast-tower"></i> Live Classes
                                         </a>
-                                        <a href="{{ url_for('student_todo') }}" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                                        <a href="{{ url_for('student.todo') }}" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                                             <i class="fas fa-tasks"></i> My Todo List
                                         </a>
-                                        <a href="{{ url_for('student_certificates') }}" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                                        <a href="{{ url_for('student.certificates') }}" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                                             <i class="fas fa-certificate"></i> Certificates
                                         </a>
                                     </div>
@@ -863,10 +863,10 @@
                             </div>
                         </div>
                     {% elif session.role == 'faculty' %}
-                        <a href="{{ url_for('faculty_dashboard') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                        <a href="{{ url_for('faculty.dashboard') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                             <i class="fas fa-chalkboard-teacher"></i> Faculty Dashboard
                         </a>
-                        <a href="{{ url_for('faculty_add_course') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                        <a href="{{ url_for('faculty.add_course') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                             <i class="fas fa-plus-circle"></i> Add New Course
                         </a>
                         
@@ -881,13 +881,13 @@
                                 </h2>
                                 <div id="managementCollapse" class="accordion-collapse collapse" data-bs-parent="#managementAccordion">
                                     <div class="accordion-body p-0">
-                                        <a href="#" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                                        <a href="{{ url_for('faculty.courses') }}" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                                             <i class="fas fa-book"></i> My Courses
                                         </a>
-                                        <a href="#" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                                        <a href="{{ url_for('faculty.dashboard') }}" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                                             <i class="fas fa-users"></i> Students
                                         </a>
-                                        <a href="#" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                                        <a href="{{ url_for('faculty.dashboard') }}" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                                             <i class="fas fa-chart-line"></i> Analytics
                                         </a>
                                     </div>
@@ -895,38 +895,38 @@
                             </div>
                         </div>
                     {% elif session.role == 'admin' %}
-                        <a href="{{ url_for('admin_dashboard') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                        <a href="{{ url_for('admin.dashboard') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                             <i class="fas fa-user-shield"></i> Admin Dashboard
                         </a>
-                        <a href="{{ url_for('admin_users') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                        <a href="{{ url_for('admin.users') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                             <i class="fas fa-users"></i> Manage Users
                         </a>
-                        <a href="{{ url_for('admin_courses') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                        <a href="{{ url_for('admin.courses') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                             <i class="fas fa-book"></i> Manage Courses
                         </a>
-                        <a href="{{ url_for('admin_payments') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                        <a href="{{ url_for('admin.payments') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                             <i class="fas fa-money-check-alt"></i> Payments
                         </a>
-                        <a href="{{ url_for('admin_support') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                        <a href="{{ url_for('admin.support') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                             <i class="fas fa-headset"></i> Support Tickets
                         </a>
-                        <a href="{{ url_for('admin_management') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                        <a href="{{ url_for('admin.management') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                             <i class="fas fa-users-cog"></i> Management Members
                         </a>
                     {% elif session.role == 'management' %}
-                        <a href="{{ url_for('management_dashboard') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                        <a href="{{ url_for('management.dashboard') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                             <i class="fas fa-chart-line"></i> Management Dashboard
                         </a>
-                        <a href="{{ url_for('management_students') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                        <a href="{{ url_for('management.students') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                             <i class="fas fa-users"></i> Students Directory
                         </a>
-                        <a href="{{ url_for('management_courses') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                        <a href="{{ url_for('management.courses') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                             <i class="fas fa-book"></i> Courses Catalog
                         </a>
-                        <a href="{{ url_for('management_support') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                        <a href="{{ url_for('management.support') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                             <i class="fas fa-headset"></i> Support Tickets
                         </a>
-                        <a href="{{ url_for('management_reports') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                        <a href="{{ url_for('management.reports') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                             <i class="fas fa-chart-bar"></i> Reports & Analytics
                         </a>
                     {% endif %}
@@ -943,32 +943,32 @@
                             <div id="accountCollapse" class="accordion-collapse collapse" data-bs-parent="#accountAccordion">
                                 <div class="accordion-body p-0">
                                     {% if session.role == 'student' %}
-                                    <a href="{{ url_for('student_profile') }}" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                                    <a href="{{ url_for('student.profile') }}" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                                         <i class="fas fa-user"></i> Profile
                                     </a>
-                                    <a href="{{ url_for('student_settings') }}" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                                    <a href="{{ url_for('student.settings') }}" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                                         <i class="fas fa-cog"></i> Settings
                                     </a>
-                                    <a href="{{ url_for('student_support') }}" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                                    <a href="{{ url_for('student.support') }}" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                                         <i class="fas fa-life-ring"></i> Help & Support
                                     </a>
                                     {% elif session.role == 'faculty' %}
-                                    <a href="{{ url_for('faculty_profile') }}" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                                    <a href="{{ url_for('faculty.profile') }}" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                                         <i class="fas fa-user"></i> Profile
                                     </a>
-                                    <a href="{{ url_for('faculty_support') }}" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                                    <a href="{{ url_for('faculty.support') }}" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                                         <i class="fas fa-ticket-alt"></i> My Tickets
                                     </a>
                                     {% elif session.role == 'admin' %}
-                                    <a href="{{ url_for('admin_profile') }}" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                                    <a href="{{ url_for('admin.profile') }}" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                                         <i class="fas fa-user-shield"></i> Profile
                                     </a>
                                     {% elif session.role == 'management' %}
-                                    <a href="{{ url_for('management_profile') }}" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                                    <a href="{{ url_for('management.profile') }}" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                                         <i class="fas fa-user-tie"></i> Profile
                                     </a>
                                     {% endif %}
-                                    <a href="{{ url_for('logout') }}" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: #dc3545; border-color: var(--border-color);">
+                                    <a href="{{ url_for('auth.logout') }}" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: #dc3545; border-color: var(--border-color);">
                                         <i class="fas fa-sign-out-alt"></i> Logout
                                     </a>
                                 </div>
@@ -976,10 +976,10 @@
                         </div>
                     </div>
                 {% else %}
-                    <a href="{{ url_for('login') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                    <a href="{{ url_for('auth.login') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                         <i class="fas fa-sign-in-alt"></i> Login
                     </a>
-                    <a href="{{ url_for('register') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                    <a href="{{ url_for('auth.register') }}" class="list-group-item list-group-item-action" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                         <i class="fas fa-user-plus"></i> Register
                     </a>
                 {% endif %}
@@ -995,10 +995,10 @@
                         </h2>
                         <div id="infoCollapse" class="accordion-collapse collapse" data-bs-parent="#infoAccordion">
                             <div class="accordion-body p-0">
-                                <a href="#" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                                <a href="{{ url_for('auth.index') }}#about" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                                     <i class="fas fa-info-circle"></i> About Us
                                 </a>
-                                <a href="#" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
+                                <a href="mailto:info@theinnovativegroup.edu.np" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
                                     <i class="fas fa-envelope"></i> Contact
                                 </a>
                                 <a href="tel:+9779862134951" class="list-group-item list-group-item-action ps-4" style="background: var(--card-bg); color: var(--text-color); border-color: var(--border-color);">
@@ -1039,19 +1039,19 @@
                     <h5><i class="fas fa-graduation-cap"></i> The Innovative Group</h5>
                     <p>Transforming education through innovation and excellence. Learn at your own pace with expert instructors.</p>
                     <div class="social-icons mt-3">
-                        <a href="#" class="text-white me-3"><i class="fab fa-facebook fa-2x"></i></a>
-                        <a href="#" class="text-white me-3"><i class="fab fa-youtube fa-2x"></i></a>
-                        <a href="#" class="text-white me-3"><i class="fab fa-instagram fa-2x"></i></a>
-                        <a href="#" class="text-white"><i class="fab fa-linkedin fa-2x"></i></a>
+                        <a href="https://www.facebook.com/ujwalraj.bhattarai.7" target="_blank" class="text-white me-3"><i class="fab fa-facebook fa-2x"></i></a>
+                        <a href="https://www.youtube.com/watch?v=xvFZjo5PgG0&list=RDxvFZjo5PgG0&start_radio=1" target="_blank" class="text-white me-3"><i class="fab fa-youtube fa-2x"></i></a>
+                        <a href="https://www.instagram.com/u.raj_bhattarai/" target="_blank" class="text-white me-3"><i class="fab fa-instagram fa-2x"></i></a>
+                        <a href="https://www.linkedin.com/in/ujwal-raj-bhattarai-640686331/" target="_blank" class="text-white"><i class="fab fa-linkedin fa-2x"></i></a>
                     </div>
                 </div>
                 <div class="col-md-4 mb-4">
                     <h5>Quick Links</h5>
                     <ul class="list-unstyled">
-                        <li class="mb-2"><a href="{{ url_for('index') }}" class="text-decoration-none"><i class="fas fa-home"></i> Home</a></li>
-                        <li class="mb-2"><a href="#" class="text-decoration-none"><i class="fas fa-info-circle"></i> About Us</a></li>
-                        <li class="mb-2"><a href="#" class="text-decoration-none"><i class="fas fa-book"></i> Courses</a></li>
-                        <li class="mb-2"><a href="#" class="text-decoration-none"><i class="fas fa-envelope"></i> Contact</a></li>
+                        <li class="mb-2"><a href="{{ url_for('auth.index') }}" class="text-decoration-none"><i class="fas fa-home"></i> Home</a></li>
+                        <li class="mb-2"><a href="{{ url_for('auth.index') }}#about" class="text-decoration-none"><i class="fas fa-info-circle"></i> About Us</a></li>
+                        <li class="mb-2"><a href="{{ url_for('auth.courses') }}" class="text-decoration-none"><i class="fas fa-book"></i> Courses</a></li>
+                        <li class="mb-2"><a href="mailto:info@theinnovativegroup.edu.np" class="text-decoration-none"><i class="fas fa-envelope"></i> Contact</a></li>
                     </ul>
                 </div>
                 <div class="col-md-4 mb-4">
@@ -1063,9 +1063,6 @@
                 </div>
             </div>
             <hr class="bg-white mt-4">
-            <div class="text-center pt-3">
-                <p class="mb-0">&copy; 2025 The Innovative Group. All rights reserved. | Made with <i class="fas fa-heart text-danger"></i> in Nepal</p>
-            </div>
         </div>
     </footer>
 

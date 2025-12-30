@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}Reports & Analytics - The Innovative Group{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="fas fa-chart-bar"></i> Reports & Analytics</h2>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5>Total Revenue</h5>
+                    <h2 class="text-success">NPR {{ "{:,.0f}".format(payments|sum(attribute='amount_npr') if payments else 0) }}</h2>
+                    <p class="text-muted mb-0">From {{ payments|length }} transactions</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5>Active Courses</h5>
+                    <h2 class="text-primary">{{ courses|length }}</h2>
+                    <p class="text-muted mb-0">Available for enrollment</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5>Average Course Price</h5>
+                    <h2 class="text-info">NPR {{ "{:,.0f}".format(courses|sum(attribute='price_npr') / courses|length if courses|length > 0 else 0) }}</h2>
+                    <p class="text-muted mb-0">Per course</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Performance -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-book"></i> Course Performance</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if courses %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Course</th>
+                                    <th>Instructor</th>
+                                    <th>Price</th>
+                                    <th>Enrollments</th>
+                                    <th>Revenue</th>
+                                    <th>Videos</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for course in courses %}
+                                <tr>
+                                    <td><strong>{{ course.title }}</strong></td>
+                                    <td>{{ course.instructor.full_name if course.instructor else 'N/A' }}</td>
+                                    <td>NPR {{ "{:,.0f}".format(course.price_npr) }}</td>
+                                    <td><span class="badge bg-info">{{ course.enrollments|list|length }}</span></td>
+                                    <td><strong>NPR {{ "{:,.0f}".format(course.price_npr * course.enrollments|list|length) }}</strong></td>
+                                    <td><span class="badge bg-secondary">{{ course.videos|list|length }}</span></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <p class="text-muted">No courses available</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Payments -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-money-bill-wave"></i> Recent Payments</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if payments %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Student</th>
+                                    <th>Course</th>
+                                    <th>Amount</th>
+                                    <th>Method</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for payment in payments[:20] %}
+                                <tr>
+                                    <td>#{{ payment.id }}</td>
+                                    <td>{{ payment.student.full_name if payment.student else 'N/A' }}</td>
+                                    <td>{{ payment.course.title if payment.course else 'N/A' }}</td>
+                                    <td><strong>NPR {{ "{:,.0f}".format(payment.amount_npr) }}</strong></td>
+                                    <td>{{ payment.payment_method|default('N/A')|title }}</td>
+                                    <td>
+                                        {% if payment.status == 'completed' %}
+                                        <span class="badge bg-success">Completed</span>
+                                        {% elif payment.status == 'pending' %}
+                                        <span class="badge bg-warning">Pending</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">Failed</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ payment.payment_date.strftime('%Y-%m-%d') if payment.payment_date else 'N/A' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <p class="text-muted">No payment records</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Options -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5><i class="fas fa-download"></i> Export Options</h5>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <button class="btn btn-outline-success w-100" onclick="alert('Excel export feature coming soon!')">
+                                <i class="fas fa-file-excel"></i> Export to Excel
+                            </button>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <button class="btn btn-outline-danger w-100" onclick="alert('PDF export feature coming soon!')">
+                                <i class="fas fa-file-pdf"></i> Export to PDF
+                            </button>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <button class="btn btn-outline-primary w-100" onclick="window.print()">
+                                <i class="fas fa-print"></i> Print Report
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-muted mt-3 mb-0"><small>* Excel and PDF export features coming soon</small></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

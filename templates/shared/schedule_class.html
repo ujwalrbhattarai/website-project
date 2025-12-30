@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Schedule Class - The Innovative Group{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('faculty.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Schedule Class</li>
+                </ol>
+            </nav>
+            <h2><i class="fas fa-calendar-plus"></i> Schedule Online Class</h2>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card dashboard-card">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-video"></i> Class Details
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="course_id" class="form-label">Course <span class="text-danger">*</span></label>
+                            <select class="form-select" id="course_id" name="course_id" required>
+                                <option value="">Select Course</option>
+                                {% for course in courses %}
+                                <option value="{{ course.id }}">{{ course.title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Class Title <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="title" name="title" 
+                                   placeholder="e.g., Introduction to Python" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"
+                                      placeholder="What topics will be covered in this class?"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="meeting_link" class="form-label">Meeting Link</label>
+                            <input type="url" class="form-control" id="meeting_link" name="meeting_link" 
+                                   placeholder="https://zoom.us/j/1234567890">
+                            <div class="form-text">Zoom, Google Meet, or other video conferencing link</div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="scheduled_at" class="form-label">Date & Time <span class="text-danger">*</span></label>
+                                <input type="datetime-local" class="form-control" id="scheduled_at" name="scheduled_at" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="duration_minutes" class="form-label">Duration (Minutes)</label>
+                                <select class="form-select" id="duration_minutes" name="duration_minutes">
+                                    <option value="30">30 minutes</option>
+                                    <option value="45">45 minutes</option>
+                                    <option value="60" selected>1 hour</option>
+                                    <option value="90">1.5 hours</option>
+                                    <option value="120">2 hours</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-calendar-check"></i> Schedule Class
+                            </button>
+                            <a href="{{ url_for('faculty.dashboard') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

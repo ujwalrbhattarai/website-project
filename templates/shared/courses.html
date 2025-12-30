@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}Courses - The Innovative Group{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <h2>
+                {% if session.role == 'admin' %}
+                <i class="fas fa-book"></i> Course Management
+                {% elif session.role == 'management' %}
+                <i class="fas fa-book"></i> Courses Catalog
+                {% elif session.role == 'faculty' %}
+                <i class="fas fa-book"></i> My Courses
+                {% else %}
+                <i class="fas fa-book"></i> Available Courses
+                {% endif %}
+            </h2>
+            {% if session.role == 'faculty' %}
+            <a href="{{ url_for('faculty.add_course') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add Course
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <h3>{{ courses|length }}</h3>
+                    <p class="text-muted mb-0">
+                        {% if session.role == 'faculty' %}My Courses{% else %}Total Courses Available{% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% if session.role in ['admin', 'management'] %}
+        <div class="col-md-4 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    {% set total_enrollments = namespace(count=0) %}
+                    {% for course in courses %}
+                        {% set total_enrollments.count = total_enrollments.count + course.enrollments|list|length %}
+                    {% endfor %}
+                    <h3>{{ total_enrollments.count }}</h3>
+                    <p class="text-muted mb-0">Total Enrollments</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    {% set total_videos = namespace(count=0) %}
+                    {% for course in courses %}
+                        {% set total_videos.count = total_videos.count + course.videos|list|length %}
+                    {% endfor %}
+                    <h3>{{ total_videos.count }}</h3>
+                    <p class="text-muted mb-0">Total Videos</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Courses List -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body p-0">
+                    {% if courses %}
+                    {% if session.role in ['admin', 'management'] %}
+                    <!-- Table View for Admin/Management -->
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Course Title</th>
+                                    <th>Instructor</th>
+                                    <th>Price (NPR)</th>
+                                    <th>Duration</th>
+                                    <th>Enrollments</th>
+                                    {% if session.role == 'admin' %}
+                                    <th>Videos</th>
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for course in courses %}
+                                <tr>
+                                    <td>{{ course.id }}</td>
+                                    <td>
+                                        <strong>{{ course.title }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ course.description[:80] }}{% if course.description|length > 80 %}...{% endif %}</small>
+                                    </td>
+                                    <td>{{ course.instructor.full_name if course.instructor else 'N/A' }}</td>
+                                    <td><strong>NPR {{ "{:,.0f}".format(course.price_npr) }}</strong></td>
+                                    <td>{{ course.duration_hours }} hours</td>
+                                    <td>
+                                        <span class="badge bg-info">{{ course.enrollments|list|length }} students</span>
+                                    </td>
+                                    {% if session.role == 'admin' %}
+                                    <td>
+                                        <span class="badge bg-secondary">{{ course.videos|list|length }} videos</span>
+                                    </td>
+                                    {% endif %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <!-- Card View for Students/Faculty -->
+                    <div class="row p-3">
+                        {% for course in courses %}
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100 shadow-sm">
+                                {% if course.thumbnail_url %}
+                                <img src="{{ course.thumbnail_url }}" class="card-img-top" alt="{{ course.title }}" style="height: 150px; object-fit: cover;">
+                                {% else %}
+                                <div class="card-img-top bg-gradient d-flex align-items-center justify-content-center" style="height: 150px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    <i class="fas fa-book fa-3x text-white"></i>
+                                </div>
+                                {% endif %}
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ course.title }}</h5>
+                                    <p class="card-text text-muted small">{{ course.description[:80] }}{% if course.description|length > 80 %}...{% endif %}</p>
+                                    <div class="mb-2">
+                                        <span class="badge bg-primary">{{ course.videos|list|length }} Videos</span>
+                                        {% if course.duration_hours %}
+                                        <span class="badge bg-secondary">{{ course.duration_hours }} Hours</span>
+                                        {% endif %}
+                                    </div>
+                                    {% if session.role == 'student' %}
+                                    <p class="mb-2 text-muted small">
+                                        <i class="fas fa-user-tie"></i> {{ course.instructor.full_name if course.instructor else 'TBA' }}
+                                    </p>
+                                    {% endif %}
+                                </div>
+                                <div class="card-footer bg-transparent">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="text-success mb-0">NPR {{ "{:,.0f}".format(course.price_npr) }}</h5>
+                                        {% if session.role == 'student' %}
+                                        <a href="{{ url_for('student.course_detail', course_id=course.id) }}" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-eye"></i> Details
+                                        </a>
+                                        {% elif session.role == 'faculty' %}
+                                        <a href="{{ url_for('faculty.course_detail', course_id=course.id) }}" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-eye"></i> Manage
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-book fa-4x text-muted mb-3"></i>
+                        <h4>No Courses</h4>
+                        <p class="text-muted">
+                            {% if session.role == 'faculty' %}
+                            You haven't created any courses yet.
+                            {% else %}
+                            No courses available at the moment.
+                            {% endif %}
+                        </p>
+                        {% if session.role == 'faculty' %}
+                        <a href="{{ url_for('faculty.add_course') }}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Create Course
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

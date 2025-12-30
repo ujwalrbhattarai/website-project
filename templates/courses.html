@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Our Courses - The Innovative Group{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1><i class="fas fa-book-open"></i> Our Courses</h1>
+            <p class="text-muted">Explore our wide range of courses designed to help you succeed</p>
+        </div>
+    </div>
+
+    <!-- Course Stats -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-primary">{{ courses|length }}</h3>
+                    <p class="text-muted mb-0">Available Courses</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-success">Expert</h3>
+                    <p class="text-muted mb-0">Instructors</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-info">24/7</h3>
+                    <p class="text-muted mb-0">Access</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Courses Grid -->
+    <div class="row">
+        {% if courses %}
+            {% for course in courses %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    {% if course.thumbnail_url %}
+                    <img src="{{ course.thumbnail_url }}" class="card-img-top" alt="{{ course.title }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                    <div class="card-img-top bg-gradient d-flex align-items-center justify-content-center" style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <i class="fas fa-book fa-4x text-white"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ course.title }}</h5>
+                        <p class="card-text text-muted">
+                            {{ course.description[:100] }}{% if course.description|length > 100 %}...{% endif %}
+                        </p>
+                        <div class="mb-3">
+                            <span class="badge bg-primary">{{ course.videos|list|length }} Videos</span>
+                            {% if course.duration_hours %}
+                            <span class="badge bg-secondary">{{ course.duration_hours }} Hours</span>
+                            {% endif %}
+                        </div>
+                        <p class="mb-2">
+                            <i class="fas fa-user-tie text-muted"></i> 
+                            <small>{{ course.instructor.full_name if course.instructor else 'TBA' }}</small>
+                        </p>
+                        <p class="mb-3">
+                            <i class="fas fa-users text-muted"></i> 
+                            <small>{{ course.enrollments|list|length }} students enrolled</small>
+                        </p>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="text-success mb-0">NPR {{ "{:,.0f}".format(course.price_npr) }}</h5>
+                            {% if session.get('user_id') %}
+                                <a href="{{ url_for('student.course_detail', course_id=course.id) }}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-eye"></i> View Details
+                                </a>
+                            {% else %}
+                                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-sign-in-alt"></i> Login to Enroll
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    <i class="fas fa-info-circle fa-2x mb-3"></i>
+                    <h4>No Courses Available</h4>
+                    <p>Check back soon for new courses!</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Call to Action -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center py-5">
+                    <h3>Ready to Start Learning?</h3>
+                    <p class="mb-4">Join thousands of students already learning with The Innovative Group</p>
+                    {% if session.get('user_id') %}
+                        <a href="{{ url_for('student.courses') }}" class="btn btn-light btn-lg">
+                            <i class="fas fa-graduation-cap"></i> Browse My Courses
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg me-2">
+                            <i class="fas fa-user-plus"></i> Register Now
+                        </a>
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

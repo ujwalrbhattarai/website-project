@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+
+{% block title %}My Todo List - The Innovative Group{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="display-4 fw-bold">
+                    <i class="fas fa-tasks text-warning"></i> My Todo List
+                </h1>
+                <button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addTodoModal">
+                    <i class="fas fa-plus-circle"></i> Add Todo
+                </button>
+            </div>
+            <p class="lead text-muted">Track your learning goals and assignments</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Pending Todos -->
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow-lg h-100" style="background: var(--card-bg); border-radius: 20px;">
+                <div class="card-header text-white py-3" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                    <h3 class="mb-0">
+                        <i class="fas fa-list-ul"></i> Pending
+                        <span class="badge bg-light text-dark float-end">{{ pending_todos|length }}</span>
+                    </h3>
+                </div>
+                <div class="card-body p-4" style="max-height: 600px; overflow-y: auto;">
+                    {% if pending_todos %}
+                        <div class="list-group list-group-flush">
+                            {% for todo in pending_todos %}
+                            <div class="list-group-item border-0 mb-3 shadow-sm" style="background: var(--light-bg); border-radius: 15px;">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="badge 
+                                                {% if todo.priority == 'high' %}bg-danger{% elif todo.priority == 'medium' %}bg-warning{% else %}bg-secondary{% endif %}
+                                                me-2">
+                                                {{ todo.priority|upper }}
+                                            </span>
+                                            {% if todo.due_date %}
+                                            <small class="text-muted">
+                                                <i class="fas fa-calendar"></i> {{ todo.due_date.strftime('%b %d, %Y') }}
+                                            </small>
+                                            {% endif %}
+                                        </div>
+                                        <h5 class="mb-2 fw-bold" style="color: var(--text-color);">{{ todo.title }}</h5>
+                                        {% if todo.description %}
+                                        <p class="text-muted small mb-2">{{ todo.description }}</p>
+                                        {% endif %}
+                                        <small class="text-muted">
+                                            <i class="fas fa-clock"></i> Created {{ todo.created_at.strftime('%b %d, %Y') }}
+                                        </small>
+                                    </div>
+                                    <div class="ms-3">
+                                        <form method="POST" action="{{ url_for('student.toggle_todo', todo_id=todo.id) }}" class="d-inline">
+                                            <button type="submit" class="btn btn-success btn-sm mb-1" title="Mark as Complete">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        </form>
+                                        <form method="POST" action="{{ url_for('student.delete_todo', todo_id=todo.id) }}" class="d-inline">
+                                            <button type="submit" class="btn btn-danger btn-sm" title="Delete" onclick="return confirm('Delete this todo?')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-check-circle text-success" style="font-size: 4rem; opacity: 0.3;"></i>
+                            <p class="text-muted mt-3">No pending todos. You're all caught up!</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Completed Todos -->
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow-lg h-100" style="background: var(--card-bg); border-radius: 20px;">
+                <div class="card-header text-white py-3" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                    <h3 class="mb-0">
+                        <i class="fas fa-check-double"></i> Completed
+                        <span class="badge bg-light text-dark float-end">{{ completed_todos|length }}</span>
+                    </h3>
+                </div>
+                <div class="card-body p-4" style="max-height: 600px; overflow-y: auto;">
+                    {% if completed_todos %}
+                        <div class="list-group list-group-flush">
+                            {% for todo in completed_todos %}
+                            <div class="list-group-item border-0 mb-3 shadow-sm" style="background: var(--light-bg); border-radius: 15px; opacity: 0.8;">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <h5 class="mb-2 fw-bold text-decoration-line-through" style="color: var(--text-color);">
+                                            <i class="fas fa-check-circle text-success me-2"></i>{{ todo.title }}
+                                        </h5>
+                                        {% if todo.description %}
+                                        <p class="text-muted small mb-2">{{ todo.description }}</p>
+                                        {% endif %}
+                                        <small class="text-muted">
+                                            <i class="fas fa-clock"></i> Completed {{ todo.completed_at.strftime('%b %d, %Y') if todo.completed_at else 'Recently' }}
+                                        </small>
+                                    </div>
+                                    <div class="ms-3">
+                                        <form method="POST" action="{{ url_for('student.toggle_todo', todo_id=todo.id) }}" class="d-inline">
+                                            <button type="submit" class="btn btn-warning btn-sm mb-1" title="Mark as Pending">
+                                                <i class="fas fa-undo"></i>
+                                            </button>
+                                        </form>
+                                        <form method="POST" action="{{ url_for('student.delete_todo', todo_id=todo.id) }}" class="d-inline">
+                                            <button type="submit" class="btn btn-danger btn-sm" title="Delete" onclick="return confirm('Delete this todo?')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-clipboard-list text-muted" style="font-size: 4rem; opacity: 0.3;"></i>
+                            <p class="text-muted mt-3">No completed todos yet. Start checking off your tasks!</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Todo Modal -->
+<div class="modal fade" id="addTodoModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background: var(--card-bg); border-radius: 20px; border: none;">
+            <div class="modal-header border-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <h5 class="modal-title text-white">
+                    <i class="fas fa-plus-circle"></i> Add New Todo
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('student.add_todo') }}">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold" style="color: var(--text-color);">
+                            <i class="fas fa-heading"></i> Title *
+                        </label>
+                        <input type="text" class="form-control form-control-lg" name="title" required
+                               placeholder="E.g., Complete Python Assignment"
+                               style="border-radius: 10px;">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold" style="color: var(--text-color);">
+                            <i class="fas fa-align-left"></i> Description
+                        </label>
+                        <textarea class="form-control" name="description" rows="3"
+                                  placeholder="Add more details about this task..."
+                                  style="border-radius: 10px;"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold" style="color: var(--text-color);">
+                            <i class="fas fa-flag"></i> Priority
+                        </label>
+                        <select class="form-select form-select-lg" name="priority" style="border-radius: 10px;">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold" style="color: var(--text-color);">
+                            <i class="fas fa-calendar-alt"></i> Due Date
+                        </label>
+                        <input type="date" class="form-control form-control-lg" name="due_date"
+                               style="border-radius: 10px;">
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add Todo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .list-group-item {
+        transition: all 0.3s ease;
+    }
+    
+    .list-group-item:hover {
+        transform: translateX(5px);
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
+    }
+    
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: var(--light-bg);
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: var(--primary-color);
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--secondary-color);
+    }
+</style>
+{% endblock %}

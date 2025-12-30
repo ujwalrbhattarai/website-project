@@ -1,0 +1,286 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile - The Innovative Group{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="fas fa-user-circle"></i> My Profile</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Profile Card -->
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <div class="avatar-circle mx-auto mb-3" style="width: 120px; height: 120px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <span style="font-size: 48px; color: white;">{{ user.full_name[0]|upper }}</span>
+                    </div>
+                    <h4>{{ user.full_name }}</h4>
+                    <p class="text-muted">@{{ user.username }}</p>
+                    <span class="badge bg-{{ 'danger' if session.role == 'admin' else 'primary' if session.role == 'faculty' else 'info' if session.role == 'management' else 'success' }} mb-3">
+                        {{ session.role|title }}
+                    </span>
+                    
+                    <div class="mt-4">
+                        {% if session.role == 'admin' %}
+                        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-primary w-100 mb-2">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                        <a href="{{ url_for('admin.users') }}" class="btn btn-outline-secondary w-100">
+                            <i class="fas fa-cog"></i> Settings
+                        </a>
+                        {% elif session.role == 'management' %}
+                        <a href="{{ url_for('management.dashboard') }}" class="btn btn-primary w-100 mb-2">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                        <a href="{{ url_for('management.reports') }}" class="btn btn-outline-primary w-100 mb-2">
+                            <i class="fas fa-chart-bar"></i> Reports
+                        </a>
+                        {% elif session.role == 'faculty' %}
+                        <a href="{{ url_for('faculty.dashboard') }}" class="btn btn-primary w-100 mb-2">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                        <a href="{{ url_for('faculty.add_course') }}" class="btn btn-success w-100 mb-2">
+                            <i class="fas fa-plus-circle"></i> Add Course
+                        </a>
+                        {% else %}
+                        <a href="{{ url_for('student.dashboard') }}" class="btn btn-primary w-100 mb-2">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                        <a href="{{ url_for('student.courses') }}" class="btn btn-success w-100 mb-2">
+                            <i class="fas fa-book"></i> Browse Courses
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Details -->
+        <div class="col-lg-8">
+            <!-- Info Cards -->
+            <div class="row mb-4">
+                {% if session.role == 'admin' %}
+                <div class="col-md-4 mb-3">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <i class="fas fa-users fa-2x text-primary mb-2"></i>
+                            <h4>{{ stats.total_users if stats else 0 }}</h4>
+                            <p class="text-muted mb-0">Total Users</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <i class="fas fa-book fa-2x text-success mb-2"></i>
+                            <h4>{{ stats.total_courses if stats else 0 }}</h4>
+                            <p class="text-muted mb-0">Courses</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <i class="fas fa-ticket-alt fa-2x text-warning mb-2"></i>
+                            <h4>{{ stats.total_tickets if stats else 0 }}</h4>
+                            <p class="text-muted mb-0">Tickets</p>
+                        </div>
+                    </div>
+                </div>
+                {% elif session.role == 'faculty' %}
+                <div class="col-md-4 mb-3">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <i class="fas fa-book fa-2x text-primary mb-2"></i>
+                            <h4>{{ stats.my_courses if stats else 0 }}</h4>
+                            <p class="text-muted mb-0">My Courses</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <i class="fas fa-users fa-2x text-success mb-2"></i>
+                            <h4>{{ stats.total_students if stats else 0 }}</h4>
+                            <p class="text-muted mb-0">Students</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <i class="fas fa-video fa-2x text-info mb-2"></i>
+                            <h4>{{ stats.total_videos if stats else 0 }}</h4>
+                            <p class="text-muted mb-0">Videos</p>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="col-md-4 mb-3">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <i class="fas fa-book fa-2x text-primary mb-2"></i>
+                            <h4>{{ stats.enrolled_courses if stats else 0 }}</h4>
+                            <p class="text-muted mb-0">Enrolled</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <i class="fas fa-certificate fa-2x text-success mb-2"></i>
+                            <h4>{{ stats.certificates if stats else 0 }}</h4>
+                            <p class="text-muted mb-0">Certificates</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <i class="fas fa-play-circle fa-2x text-info mb-2"></i>
+                            <h4>{{ stats.videos_watched if stats else 0 }}</h4>
+                            <p class="text-muted mb-0">Videos Watched</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Account Information -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> Account Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small">Full Name</label>
+                            <p class="mb-0"><strong>{{ user.full_name }}</strong></p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small">Username</label>
+                            <p class="mb-0"><strong>{{ user.username }}</strong></p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small">Email</label>
+                            <p class="mb-0"><strong>{{ user.email }}</strong></p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small">Role</label>
+                            <p class="mb-0"><strong>{{ user.role|title }}</strong></p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small">Member Since</label>
+                            <p class="mb-0"><strong>{{ user.created_at.strftime('%B %d, %Y') if user.created_at else 'N/A' }}</strong></p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small">Status</label>
+                            <p class="mb-0"><span class="badge bg-success">Active</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-bolt"></i> Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% if session.role == 'student' %}
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ url_for('student.courses') }}" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-book"></i><br>Courses
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ url_for('student.certificates') }}" class="btn btn-outline-success w-100">
+                                <i class="fas fa-certificate"></i><br>Certificates
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ url_for('student.support') }}" class="btn btn-outline-warning w-100">
+                                <i class="fas fa-ticket-alt"></i><br>Support
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ url_for('student.settings') }}" class="btn btn-outline-info w-100">
+                                <i class="fas fa-cog"></i><br>Settings
+                            </a>
+                        </div>
+                        {% elif session.role == 'faculty' %}
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ url_for('faculty.courses') }}" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-book"></i><br>My Courses
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ url_for('faculty.add_course') }}" class="btn btn-outline-success w-100">
+                                <i class="fas fa-plus"></i><br>Add Course
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ url_for('faculty.support') }}" class="btn btn-outline-warning w-100">
+                                <i class="fas fa-ticket-alt"></i><br>Support
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ url_for('faculty.dashboard') }}" class="btn btn-outline-info w-100">
+                                <i class="fas fa-chart-line"></i><br>Analytics
+                            </a>
+                        </div>
+                        {% elif session.role == 'management' %}
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ url_for('management.students') }}" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-users"></i><br>Students
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ url_for('management.courses') }}" class="btn btn-outline-success w-100">
+                                <i class="fas fa-book"></i><br>Courses
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ url_for('management.reports') }}" class="btn btn-outline-warning w-100">
+                                <i class="fas fa-chart-bar"></i><br>Reports
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ url_for('management.support') }}" class="btn btn-outline-info w-100">
+                                <i class="fas fa-ticket-alt"></i><br>Support
+                            </a>
+                        </div>
+                        {% else %}
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ url_for('admin.users') }}" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-users"></i><br>Users
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ url_for('admin.courses') }}" class="btn btn-outline-success w-100">
+                                <i class="fas fa-book"></i><br>Courses
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ url_for('admin.reports') }}" class="btn btn-outline-warning w-100">
+                                <i class="fas fa-chart-bar"></i><br>Reports
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{{ url_for('admin.support') }}" class="btn btn-outline-info w-100">
+                                <i class="fas fa-ticket-alt"></i><br>Support
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

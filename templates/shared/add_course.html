@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Add New Course - Faculty{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card dashboard-card">
+                <div class="card-body p-4">
+                    <h2 class="mb-4"><i class="fas fa-plus-circle"></i> Add New Course</h2>
+                    
+                    <form method="POST" action="{{ url_for('faculty.add_course') }}">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Course Title *</label>
+                            <input type="text" class="form-control" id="title" name="title" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description *</label>
+                            <textarea class="form-control" id="description" name="description" 
+                                      rows="5" required></textarea>
+                            <small class="text-muted">Provide a detailed description of what students will learn</small>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="price_npr" class="form-label">Price (NPR) *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">रू</span>
+                                    <input type="number" class="form-control" id="price_npr" 
+                                           name="price_npr" step="0.01" min="0" required>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="duration_hours" class="form-label">Duration (Hours)</label>
+                                <input type="number" class="form-control" id="duration_hours" 
+                                       name="duration_hours" min="0">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="demo_video_url" class="form-label">
+                                <i class="fas fa-video text-primary"></i> Demo Video URL (Optional)
+                            </label>
+                            <input type="text" class="form-control" id="demo_video_url" name="demo_video_url">
+                            <small class="text-muted">Add a YouTube demo video to attract students (e.g., https://www.youtube.com/embed/VIDEO_ID)</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="thumbnail_url" class="form-label">
+                                <i class="fas fa-image text-success"></i> Course Thumbnail URL (Optional)
+                            </label>
+                            <input type="text" class="form-control" id="thumbnail_url" name="thumbnail_url">
+                            <small class="text-muted">Add an attractive course image URL</small>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save"></i> Create Course
+                            </button>
+                            <a href="{{ url_for('faculty.dashboard') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

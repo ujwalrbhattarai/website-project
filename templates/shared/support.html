@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}Support Tickets - The Innovative Group{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <h2><i class="fas fa-ticket-alt"></i> Support Tickets</h2>
+            {% if session.role == 'student' %}
+            <a href="{{ url_for('student.support_new') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> New Ticket
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Ticket Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-envelope-open fa-2x text-primary mb-2"></i>
+                    <h3>{{ tickets|selectattr('status', 'equalto', 'open')|list|length }}</h3>
+                    <p class="text-muted mb-0">Open</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-spinner fa-2x text-warning mb-2"></i>
+                    <h3>{{ tickets|selectattr('status', 'equalto', 'in_progress')|list|length }}</h3>
+                    <p class="text-muted mb-0">In Progress</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                    <h3>{{ tickets|selectattr('status', 'equalto', 'closed')|list|length }}</h3>
+                    <p class="text-muted mb-0">Closed</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-list fa-2x text-info mb-2"></i>
+                    <h3>{{ tickets|length }}</h3>
+                    <p class="text-muted mb-0">Total</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tickets Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        {% if session.role == 'student' %}
+                        My Tickets
+                        {% else %}
+                        All Support Tickets
+                        {% endif %}
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if tickets %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    {% if session.role != 'student' %}
+                                    <th>Student</th>
+                                    {% endif %}
+                                    <th>Title</th>
+                                    <th>Category</th>
+                                    <th>Priority</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ticket in tickets %}
+                                <tr>
+                                    <td>#{{ ticket.id }}</td>
+                                    {% if session.role != 'student' %}
+                                    <td>{{ ticket.student.full_name if ticket.student else 'N/A' }}</td>
+                                    {% endif %}
+                                    <td>{{ ticket.title[:50] }}{% if ticket.title|length > 50 %}...{% endif %}</td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ ticket.category|default('General')|replace('_', ' ')|title }}</span>
+                                    </td>
+                                    <td>
+                                        {% if ticket.priority == 'high' %}
+                                        <span class="badge bg-danger">High</span>
+                                        {% elif ticket.priority == 'medium' %}
+                                        <span class="badge bg-warning">Medium</span>
+                                        {% else %}
+                                        <span class="badge bg-info">Low</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if ticket.status == 'open' %}
+                                        <span class="badge bg-primary">Open</span>
+                                        {% elif ticket.status == 'in_progress' %}
+                                        <span class="badge bg-warning">In Progress</span>
+                                        {% else %}
+                                        <span class="badge bg-success">Closed</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ ticket.created_at.strftime('%Y-%m-%d') if ticket.created_at else 'N/A' }}</td>
+                                    <td>
+                                        {% if session.role == 'student' %}
+                                        <a href="{{ url_for('student.support_detail', ticket_id=ticket.id) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        {% elif session.role == 'faculty' %}
+                                        <a href="{{ url_for('faculty.support_detail', ticket_id=ticket.id) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        {% elif session.role == 'management' %}
+                                        <a href="{{ url_for('management.support_detail', ticket_id=ticket.id) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        {% else %}
+                                        <a href="{{ url_for('admin.support_detail', ticket_id=ticket.id) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-ticket-alt fa-4x text-muted mb-3"></i>
+                        <h4>No Tickets</h4>
+                        <p class="text-muted">
+                            {% if session.role == 'student' %}
+                            You haven't created any support tickets yet.
+                            {% else %}
+                            No support tickets found.
+                            {% endif %}
+                        </p>
+                        {% if session.role == 'student' %}
+                        <a href="{{ url_for('student.support_new') }}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Create Ticket
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

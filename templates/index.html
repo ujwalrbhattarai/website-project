@@ -17,10 +17,10 @@
                 </p>
                 {% if not session.user_id %}
                 <div class="mt-4 animate__animated animate__fadeInUp animate__delay-2s">
-                    <a href="{{ url_for('register') }}" class="btn btn-light btn-lg me-3 px-5 py-3">
-                        <i class="fas fa-user-plus"></i> Get Started Free
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg me-3 px-5 py-3">
+                        <i class="fas fa-user-plus"></i> Get Started
                     </a>
-                    <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg px-5 py-3">
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg px-5 py-3">
                         <i class="fas fa-sign-in-alt"></i> Login
                     </a>
                 </div>
@@ -110,7 +110,7 @@
                     <div class="card-body">
                         <div class="mb-2">
                             <span class="badge bg-success"><i class="fas fa-star"></i> Bestseller</span>
-                            <span class="badge bg-primary">{{ course.videos|length }} Videos</span>
+                            <span class="badge bg-primary">{{ course.videos|list|length }} Videos</span>
                         </div>
                         <h5 class="card-title">{{ course.title }}</h5>
                         <p class="card-text text-muted">{{ course.description[:80] }}...</p>
@@ -126,16 +126,16 @@
                             </small>
                             {% endif %}
                             <small class="text-muted">
-                                <i class="fas fa-users"></i> {{ course.enrollments|length }} enrolled
+                                <i class="fas fa-users"></i> {{ course.enrollments|list|length }} enrolled
                             </small>
                         </div>
                         {% if session.user_id %}
-                            <a href="{{ url_for('student_course_detail', course_id=course.id) }}" 
+                            <a href="{{ url_for('student.course_detail', course_id=course.id) }}" 
                                class="btn btn-primary w-100">
                                 <i class="fas fa-eye"></i> View Details
                             </a>
                         {% else %}
-                            <a href="{{ url_for('login') }}" class="btn btn-primary w-100">
+                            <a href="{{ url_for('auth.login') }}" class="btn btn-primary w-100">
                                 <i class="fas fa-sign-in-alt"></i> Login to Enroll
                             </a>
                         {% endif %}
@@ -160,11 +160,11 @@
                 <h2 class="display-4 mb-4">🚀 Ready to Start Learning?</h2>
                 <p class="lead fs-4 mb-4">Join thousands of students already learning with us!</p>
                 {% if not session.user_id %}
-                <a href="{{ url_for('register') }}" class="btn btn-light btn-lg px-5 py-3">
+                <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg px-5 py-3">
                     <i class="fas fa-rocket"></i> Start Your Journey Now
                 </a>
                 {% else %}
-                <a href="{{ url_for('student_courses') }}" class="btn btn-light btn-lg px-5 py-3">
+                <a href="{{ url_for('student.courses') }}" class="btn btn-light btn-lg px-5 py-3">
                     <i class="fas fa-book"></i> Browse All Courses
                 </a>
                 {% endif %}

@@ -1,17 +1,27 @@
 """
 Configuration file for the Educational Institute Website
-Modify these settings according to your needs
+Uses environment variables for sensitive data
 """
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 class Config:
+    """Base configuration"""
     # Security
-    SECRET_KEY = 'your-secret-key-here-change-this-in-production'
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
     
-    # Database - PostgreSQL Only
-    # Format: postgresql://username:password@host:port/database_name
-    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:Biratnagar-8@localhost:5432/the_innovative_group'
-    
+    # Database Configuration
+    # PostgreSQL: postgresql://username:password@localhost/database_name
+    # SQLite: sqlite:///database_name.db
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///educational_institute.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        'pool_pre_ping': True,
+        'pool_recycle': 300,
+    }
     
     # Upload settings
     UPLOAD_FOLDER = 'static/uploads'
@@ -26,16 +36,16 @@ class Config:
     CURRENCY_SYMBOL = 'रू'
     
     # Email settings (for future implementation)
-    MAIL_SERVER = 'smtp.gmail.com'
-    MAIL_PORT = 587
+    MAIL_SERVER = os.environ.get('MAIL_SERVER') or 'smtp.gmail.com'
+    MAIL_PORT = int(os.environ.get('MAIL_PORT') or 587)
     MAIL_USE_TLS = True
-    MAIL_USERNAME = 'u2689910@gmail.com'
-    MAIL_PASSWORD = 'abcd1234_4321'
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     
     # Payment Gateway (for future implementation)
     # eSewa credentials
-    ESEWA_MERCHANT_ID = 'your-esewa-merchant-id'
-    ESEWA_SECRET_KEY = 'your-esewa-secret-key'
+    ESEWA_MERCHANT_ID = os.environ.get('ESEWA_MERCHANT_ID')
+    ESEWA_SECRET_KEY = os.environ.get('ESEWA_SECRET_KEY')
     
     # Khalti credentials
     KHALTI_PUBLIC_KEY = 'your-khalti-public-key'

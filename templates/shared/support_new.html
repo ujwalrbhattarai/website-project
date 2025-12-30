@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}New Support Ticket - The Innovative Group{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card dashboard-card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-ticket-alt"></i> Create New Support Ticket</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" action="{% if session.role == 'student' %}{{ url_for('student.support_new') }}{% elif session.role == 'faculty' %}{{ url_for('faculty.support_new') }}{% elif session.role == 'management' %}{{ url_for('management.support_new') }}{% else %}{{ url_for('admin.support_new') }}{% endif %}">
+                        <div class="mb-3">
+                            <label for="subject" class="form-label">Subject *</label>
+                            <input type="text" class="form-control" id="subject" name="subject" required
+                                   placeholder="Brief description of your issue">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Category</label>
+                            <select class="form-select" id="category" name="category">
+                                <option value="general">General Inquiry</option>
+                                <option value="technical">Technical Issue</option>
+                                <option value="payment">Payment Issue</option>
+                                <option value="course">Course Related</option>
+                                <option value="account">Account Issue</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="priority" class="form-label">Priority</label>
+                            <select class="form-select" id="priority" name="priority">
+                                <option value="low">Low</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Detailed Description *</label>
+                            <textarea class="form-control" id="message" name="message" rows="6" required
+                                      placeholder="Please describe your issue in detail..."></textarea>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            {% if session.role == 'student' %}
+                            <a href="{{ url_for('student.support') }}" class="btn btn-secondary">
+                            {% elif session.role == 'faculty' %}
+                            <a href="{{ url_for('faculty.support') }}" class="btn btn-secondary">
+                            {% elif session.role == 'management' %}
+                            <a href="{{ url_for('management.support') }}" class="btn btn-secondary">
+                            {% else %}
+                            <a href="{{ url_for('admin.support') }}" class="btn btn-secondary">
+                            {% endif %}
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Submit Ticket
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
